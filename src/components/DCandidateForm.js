@@ -11,6 +11,9 @@ import {
 } from "@material-ui/core";
 import React, { useState, useEffect } from "react";
 import useForm from "./useForm";
+import { connect } from "react-redux";
+import * as actions from "../actions/dCandidate";
+import { useToasts } from "react-toast-notifications";
 
 const styles = (theme) => ({
   root: {
@@ -38,25 +41,32 @@ const initialFieldValues = {
 };
 
 const DCandidateForm = ({ classes, ...props }) => {
-  const validate = (fieldValues=values) => {
-    let temp = {};
-   if ("fullName" in fieldValues)
-    temp.fullName = fieldValues.fullName ? "" : "This field is required";
+  //Toast message
+const {addToast}=useToasts()
+
+  const validate = (fieldValues = values) => {
+    let temp = {...errors};
+    if ("fullName" in fieldValues)
+      temp.fullName = fieldValues.fullName ? "" : "This field is required";
     if ("mobile" in fieldValues)
-    temp.mobile = fieldValues.mobile ? "" : "This field is required";
+      temp.mobile = fieldValues.mobile ? "" : "This field is required";
     if ("bloodGroup" in fieldValues)
-    temp.bloodGroup = fieldValues.bloodGroup ? "" : "This field is required";
+      temp.bloodGroup = fieldValues.bloodGroup ? "" : "This field is required";
     if ("email" in fieldValues)
-    temp.email = /^$|.+@.+..+/.test(fieldValues.email) ? "" : "Email is not valid";
+      temp.email = /^$|.+@.+..+/.test(fieldValues.email)
+        ? ""
+        : "Email is not valid";
     setErrors({
       ...temp,
     });
-    if(fieldValues == values)
-    return Object.values(temp).every((x) => x == "");
+    if (fieldValues === values)
+      return Object.values(temp).every((x) => x === "");
   };
 
-  const { values, setValues, errors, setErrors, handleInputChange } =
-    useForm(initialFieldValues,validate);
+  const { values, setValues, errors, setErrors, handleInputChange,restForm } = useForm(
+    initialFieldValues,
+    validate,props.setCurrentId
+  );
 
   //material ui for select
 
@@ -68,10 +78,27 @@ const DCandidateForm = ({ classes, ...props }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+
     if (validate()) {
-      window.alert("Validation Succeeded");
-    }
+      const onSuccess=()=> {restForm()
+      addToast("Submmited Successfully",{appearance:'success'})
+      }
+      if (props.currentId === 0)
+        props.createDCandidate(values,  onSuccess);
+      else 
+        props.updateDCandidate(props.currentId,values,  onSuccess);
+          }
+          
   };
+
+  useEffect(() => {
+    if (props.currentId !== 0){
+      setValues({
+        ...props.dCandidateList.find((x) => x.id === props.currentId),
+      });
+      setErrors({})
+    }
+  }, [props.currentId]);
 
   return (
     <form
@@ -160,7 +187,7 @@ const DCandidateForm = ({ classes, ...props }) => {
             >
               Submit
             </Button>
-            <Button variant="contained" className={classes.smMargin}>
+            <Button variant="contained" className={classes.smMargin} onClick={restForm}>
               Reset
             </Button>
           </div>
@@ -170,4 +197,16 @@ const DCandidateForm = ({ classes, ...props }) => {
   );
 };
 
-export default withStyles(styles)(DCandidateForm);
+const mapStateToProps = (state) => ({
+  dCandidateList: state.dCandidate.list,
+});
+
+const mapActionToProps = {
+  createDCandidate: actions.create,
+  updateDCandidate: actions.update,
+};
+
+export default connect(
+  mapStateToProps,
+  mapActionToProps
+)(withStyles(styles)(DCandidateForm));
