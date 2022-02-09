@@ -53,6 +53,7 @@ export const create = (data, onSuccess) => (dispatch) => {
         type: ACTION_TYPES.CREATE,
         payload: res.data,
       });
+
       onSuccess();
     })
     .catch((err) => console.log(err));

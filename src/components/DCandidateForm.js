@@ -42,10 +42,10 @@ const initialFieldValues = {
 
 const DCandidateForm = ({ classes, ...props }) => {
   //Toast message
-const {addToast}=useToasts()
+  const { addToast } = useToasts();
 
   const validate = (fieldValues = values) => {
-    let temp = {...errors};
+    let temp = { ...errors };
     if ("fullName" in fieldValues)
       temp.fullName = fieldValues.fullName ? "" : "This field is required";
     if ("mobile" in fieldValues)
@@ -63,10 +63,8 @@ const {addToast}=useToasts()
       return Object.values(temp).every((x) => x === "");
   };
 
-  const { values, setValues, errors, setErrors, handleInputChange,restForm } = useForm(
-    initialFieldValues,
-    validate,props.setCurrentId
-  );
+  const { values, setValues, errors, setErrors, handleInputChange, restForm } =
+    useForm(initialFieldValues, validate, props.setCurrentId);
 
   //material ui for select
 
@@ -80,23 +78,21 @@ const {addToast}=useToasts()
     e.preventDefault();
 
     if (validate()) {
-      const onSuccess=()=> {restForm()
-      addToast("Submmited Successfully",{appearance:'success'})
-      }
-      if (props.currentId === 0)
-        props.createDCandidate(values,  onSuccess);
-      else 
-        props.updateDCandidate(props.currentId,values,  onSuccess);
-          }
-          
+      const onSuccess = () => {
+        restForm();
+        addToast("Submmited Successfully", { appearance: "success" });
+      };
+      if (props.currentId === 0) props.createDCandidate(values, onSuccess);
+      else props.updateDCandidate(props.currentId, values, onSuccess);
+    }
   };
 
   useEffect(() => {
-    if (props.currentId !== 0){
+    if (props.currentId !== 0) {
       setValues({
         ...props.dCandidateList.find((x) => x.id === props.currentId),
       });
-      setErrors({})
+      setErrors({});
     }
   }, [props.currentId]);
 
@@ -187,7 +183,11 @@ const {addToast}=useToasts()
             >
               Submit
             </Button>
-            <Button variant="contained" className={classes.smMargin} onClick={restForm}>
+            <Button
+              variant="contained"
+              className={classes.smMargin}
+              onClick={restForm}
+            >
               Reset
             </Button>
           </div>

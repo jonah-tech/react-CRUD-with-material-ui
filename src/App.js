@@ -7,17 +7,24 @@ import { store } from "./actions/store";
 import DCandidates from "./components/DCandidates";
 import { Container } from "@material-ui/core";
 import { ToastProvider } from "react-toast-notifications";
-//import DCandidateForm from "./components/DCandidateForm";
+import Header from "./Header";
+import Menu from "./Menu";
+import Dashboard from "./Dashboard";
+import Footer from "./Footer";
 
 function App() {
   return (
-    <Provider store={store}>
+    <Provider class="wrapper" store={store}>
       <ToastProvider autoDismiss={true}>
-      <Container maxWidth="lg">
-        <DCandidates />
-      </Container>
+        <Container maxWidth="lg">
+          <Header/>
+          <Menu/>
+          <Dashboard/>
+          <DCandidates/>
+          <Footer/>
+          
+        </Container>
       </ToastProvider>
-     
     </Provider>
   );
 }
